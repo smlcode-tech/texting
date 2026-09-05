@@ -39,24 +39,24 @@ export function useAuth() {
     clearMessages()
 
     if (!isSupabaseConfigured) {
-      setError('Supabase baÄŸlantÄ±sÄ± yapÄ±landÄ±rÄ±lmamÄ±ÅŸ. .env dosyasÄ±nÄ± oluÅŸturun.')
+      setError('Supabase bağlantısı yapılandırılmamış. .env dosyasını oluşturun.')
       return
     }
 
     const normalizedEmail = email.trim().toLowerCase()
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
-      setError('GeÃ§erli bir e-posta adresi girin.')
+      setError('Geçerli bir e-posta adresi girin.')
       return
     }
     if (password.length < 8) {
-      setError('ParolanÄ±z en az 8 karakter olmalÄ±.')
+      setError('Parolanız en az 8 karakter olmalı.')
       return
     }
 
     setIsBusy(true)
     if (mode === 'register') {
       if (name.trim().length < 2) {
-        setError('AdÄ±nÄ±z en az 2 karakter olmalÄ±.')
+        setError('Adınız en az 2 karakter olmalı.')
         setIsBusy(false)
         return
       }
@@ -73,13 +73,13 @@ export function useAuth() {
       if (data.session) return
       setEmail(normalizedEmail)
       setStep('otp')
-      setNotice('DoÄŸrulama kodunu e-posta adresinize gÃ¶nderdik.')
+      setNotice('Doğrulama kodunu e-posta adresinize gönderdik.')
       return
     }
 
     const { error: signInError } = await supabase.auth.signInWithPassword({ email: normalizedEmail, password })
     setIsBusy(false)
-    if (signInError) setError('E-posta veya parola hatalÄ± ya da e-posta henÃ¼z doÄŸrulanmadÄ±.')
+    if (signInError) setError('E-posta veya parola hatalı ya da e-posta henüz doğrulanmadı.')
   }
 
   const signInWithGoogle = async () => {
@@ -102,13 +102,13 @@ export function useAuth() {
     event.preventDefault()
     clearMessages()
     if (!/^\d{6}$/.test(otp)) {
-      setError('6 haneli doÄŸrulama kodunu girin.')
+      setError('6 haneli doğrulama kodunu girin.')
       return
     }
     setIsBusy(true)
     const { error: verifyError } = await supabase.auth.verifyOtp({ email, token: otp, type: 'signup' })
     setIsBusy(false)
-    if (verifyError) setError('Kod geÃ§ersiz veya sÃ¼resi dolmuÅŸ.')
+    if (verifyError) setError('Kod geçersiz veya süresi dolmuş.')
   }
 
   const resendOtp = async () => {
@@ -116,14 +116,14 @@ export function useAuth() {
     setIsBusy(true)
     const { error: resendError } = await supabase.auth.resend({ type: 'signup', email })
     setIsBusy(false)
-    setNotice(resendError ? '' : 'Yeni doÄŸrulama kodu gÃ¶nderildi.')
+    setNotice(resendError ? '' : 'Yeni doğrulama kodu gönderildi.')
     if (resendError) setError(resendError.message)
   }
 
   const logout = async () => {
     await supabase.auth.signOut()
     setPassword('')
-    setNotice('Oturumunuz kapatÄ±ldÄ±.')
+    setNotice('Oturumunuz kapatıldı.')
   }
 
   return {
