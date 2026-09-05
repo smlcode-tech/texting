@@ -92,7 +92,10 @@ export function useAuth() {
     setIsBusy(true)
     const { error: googleError } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: window.location.origin },
+      options: {
+        redirectTo: window.location.origin,
+        queryParams: { prompt: 'login' },
+      },
     })
     setIsBusy(false)
     if (googleError) setError(googleError.message)
@@ -121,8 +124,15 @@ export function useAuth() {
   }
 
   const logout = async () => {
-    await supabase.auth.signOut()
+    await supabase.auth.signOut({ scope: 'global' })
+    setMode('login')
+    setStep('credentials')
+    setName('')
+    setEmail('')
     setPassword('')
+    setOtp('')
+    setShowPassword(false)
+    clearMessages()
     setNotice('Oturumunuz kapatıldı.')
   }
 
