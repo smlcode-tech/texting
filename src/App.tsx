@@ -1,3 +1,5 @@
+'use client'
+
 import AuthPanel from './components/AuthPanel'
 import IntroPanel from './components/IntroPanel'
 import SignedInView from './components/SignedInView'
