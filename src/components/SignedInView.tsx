@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import type { Session } from '@supabase/supabase-js'
 
 type SignedInViewProps = {
@@ -6,6 +7,29 @@ type SignedInViewProps = {
 }
 
 function SignedInView({ session, onLogout }: SignedInViewProps) {
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false)
+  const accountMenuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!isAccountMenuOpen) return
+
+    const closeMenu = (event: MouseEvent) => {
+      if (accountMenuRef.current && !accountMenuRef.current.contains(event.target as Node)) {
+        setIsAccountMenuOpen(false)
+      }
+    }
+    const closeMenuWithEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsAccountMenuOpen(false)
+    }
+
+    document.addEventListener('mousedown', closeMenu)
+    document.addEventListener('keydown', closeMenuWithEscape)
+    return () => {
+      document.removeEventListener('mousedown', closeMenu)
+      document.removeEventListener('keydown', closeMenuWithEscape)
+    }
+  }, [isAccountMenuOpen])
+
   const conversations = [
     { name: 'Ece Yılmaz', preview: 'Sunum için son dosyayı...', time: '10:42', unread: 2, initials: 'EY', tone: 'peach' },
     { name: 'Ürün ekibi', preview: 'Mert: Yeni akış yayında.', time: '09:18', unread: 0, initials: 'ÜE', tone: 'green' },
@@ -34,7 +58,18 @@ function SignedInView({ session, onLogout }: SignedInViewProps) {
         <div className="profile-bar">
           <span className="avatar avatar-profile">{(session.user.email?.[0] ?? 'S').toUpperCase()}</span>
           <span><strong>{session.user.user_metadata?.name ?? 'Sen'}</strong><small>{session.user.email}</small></span>
-          <button className="more-button" type="button" aria-label="Hesap seçenekleri">•••</button>
+          <div className="account-menu-wrap" ref={accountMenuRef}>
+            <button className="more-button" type="button" aria-label="Hesap seçenekleri" aria-expanded={isAccountMenuOpen} onClick={() => setIsAccountMenuOpen((isOpen) => !isOpen)}>•••</button>
+            {isAccountMenuOpen && (
+              <div className="account-menu" role="menu">
+                <button type="button" role="menuitem" onClick={() => setIsAccountMenuOpen(false)}><span>◉</span> Profil</button>
+                <button type="button" role="menuitem" onClick={() => setIsAccountMenuOpen(false)}><span>⚙</span> Ayarlar</button>
+                <button type="button" role="menuitem" onClick={() => setIsAccountMenuOpen(false)}><span>◌</span> Bildirimler</button>
+                <div className="account-menu-divider" />
+                <button className="menu-logout" type="button" role="menuitem" onClick={onLogout}><span>↪</span> Çıkış yap</button>
+              </div>
+            )}
+          </div>
         </div>
       </aside>
 
