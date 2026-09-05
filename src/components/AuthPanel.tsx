@@ -1,6 +1,4 @@
-import type { FormEvent } from 'react'
-
-type Mode = 'login' | 'register'
+import type { AuthFormEvent, Mode } from '../types/auth'
 
 type AuthPanelProps = {
   mode: Mode
@@ -19,8 +17,8 @@ type AuthPanelProps = {
   onPasswordChange: (password: string) => void
   onOtpChange: (otp: string) => void
   onTogglePassword: () => void
-  onSubmit: (event: FormEvent<HTMLFormElement>) => void
-  onVerifyOtp: (event: FormEvent<HTMLFormElement>) => void
+  onSubmit: (event: AuthFormEvent) => void
+  onVerifyOtp: (event: AuthFormEvent) => void
   onResendOtp: () => void
 }
 
