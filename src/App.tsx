@@ -31,6 +31,7 @@ function App() {
         onOtpChange={auth.setOtp}
         onTogglePassword={() => auth.setShowPassword(!auth.showPassword)}
         onSubmit={(event) => void auth.submit(event)}
+        onGoogleSignIn={() => void auth.signInWithGoogle()}
         onVerifyOtp={(event) => void auth.verifyOtp(event)}
         onResendOtp={() => void auth.resendOtp()}
       />

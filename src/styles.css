@@ -25,6 +25,12 @@ h1 em { font-family: 'DM Serif Display', serif; font-weight: 400; }
 .tabs button { border: 0; background: transparent; color: #9a9c94; padding: 0 0 13px; font-weight: 700; font-size: 13px; position: relative; }
 .tabs button.active { color: #183d3a; }
 .tabs button.active::after { content: ''; height: 2px; background: #d17f43; position: absolute; left: 0; right: 0; bottom: -1px; }
+.google-button { width: 100%; border: 1px solid #d9d8d0; border-radius: 3px; padding: 13px 17px; display: flex; align-items: center; justify-content: center; gap: 10px; background: #fbfaf6; color: #20312f; font-weight: 700; font-size: 13px; transition: border-color .2s, background .2s; }
+.google-button:hover { border-color: #69998a; background: #f4f6f1; }
+.google-button:disabled { cursor: wait; opacity: .65; }
+.google-mark { color: #4285f4; font-size: 18px; font-weight: 700; line-height: 1; }
+.auth-divider { display: flex; align-items: center; gap: 12px; margin: 22px 0; color: #98a19c; font-size: 11px; }
+.auth-divider::before, .auth-divider::after { content: ''; height: 1px; flex: 1; background: #d8d4ca; }
 form { display: grid; gap: 19px; }
 label { display: grid; gap: 8px; color: #566660; font-size: 12px; font-weight: 700; }
 input { width: 100%; border: 1px solid #d9d8d0; background: #fbfaf6; border-radius: 3px; padding: 14px 15px; color: #20312f; outline: none; font-size: 14px; transition: border-color .2s, box-shadow .2s; }
