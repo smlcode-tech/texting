@@ -8,6 +8,7 @@ type SignedInViewProps = {
 
 function SignedInView({ session, onLogout }: SignedInViewProps) {
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false)
+  const [selectedConversationIndex, setSelectedConversationIndex] = useState(0)
   const accountMenuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -31,11 +32,12 @@ function SignedInView({ session, onLogout }: SignedInViewProps) {
   }, [isAccountMenuOpen])
 
   const conversations = [
-    { name: 'Ece Yılmaz', preview: 'Sunum için son dosyayı...', time: '10:42', unread: 2, initials: 'EY', tone: 'peach' },
-    { name: 'Ürün ekibi', preview: 'Mert: Yeni akış yayında.', time: '09:18', unread: 0, initials: 'ÜE', tone: 'green' },
-    { name: 'Burak Aydın', preview: 'Tamam, akşam konuşalım.', time: 'Dün', unread: 0, initials: 'BA', tone: 'blue' },
-    { name: 'Tasarım notları', preview: '3 kişi çevrimiçi', time: 'Pzt', unread: 0, initials: 'TN', tone: 'yellow' },
+    { name: 'Ece Yılmaz', handle: '@eceyilmaz', preview: 'Sunum için son dosyayı...', time: '10:42', unread: 2, initials: 'EY', tone: 'peach', status: 'Şu an aktif', messages: ['Selam! Yeni sunum dosyasına bakabildin mi?', 'Baktım, giriş bölümüne birkaç not bıraktım. Genel akış çok iyi görünüyor.', 'Harika, teşekkürler! Son halini birazdan paylaşırım.', 'Sunum için son dosyayı bekliyorum, sonra müşteriye iletebiliriz.'] },
+    { name: 'Ürün ekibi', handle: '4 üye', preview: 'Mert: Yeni akış yayında.', time: '09:18', unread: 0, initials: 'ÜE', tone: 'green', status: '3 kişi aktif', messages: ['Yeni akış yayında, test etmek isteyen var mı?', 'Ben şimdi kontrol ediyorum, birkaç dakika içinde not bırakırım.', 'Harika, özellikle mobil görünümü merak ediyorum.', 'Akşam toplantısından önce son geri bildirimleri toplayalım.'] },
+    { name: 'Burak Aydın', handle: '@burakaydin', preview: 'Tamam, akşam konuşalım.', time: 'Dün', unread: 0, initials: 'BA', tone: 'blue', status: 'Dün aktifti', messages: ['Hafta sonu için plan kesinleşti mi?', 'Henüz değil, hava durumuna göre karar verelim.', 'Tamam, akşam konuşalım.', 'Olur, sana haber veririm.'] },
+    { name: 'Tasarım notları', handle: '3 üye', preview: '3 kişi çevrimiçi', time: 'Pzt', unread: 0, initials: 'TN', tone: 'yellow', status: '3 kişi aktif', messages: ['Yeni renk paletini kanala ekledim.', 'Başlık tipografisiyle çok iyi uyum sağlıyor.', 'Kartların aralığını da biraz açalım.', 'Not aldım, bir sonraki taslakta güncellerim.'] },
   ]
+  const selectedConversation = conversations[selectedConversationIndex]
 
   return (
     <main className="messenger-shell">
@@ -48,7 +50,7 @@ function SignedInView({ session, onLogout }: SignedInViewProps) {
         <label className="search-box"><span aria-hidden="true">⌕</span><input placeholder="Konuşmalarda ara" aria-label="Konuşmalarda ara" /></label>
         <nav className="conversation-list" aria-label="Konuşmalar">
           {conversations.map((conversation, index) => (
-            <button className={`conversation-item ${index === 0 ? 'selected' : ''}`} type="button" key={conversation.name}>
+            <button className={`conversation-item ${index === selectedConversationIndex ? 'selected' : ''}`} type="button" key={conversation.name} onClick={() => setSelectedConversationIndex(index)} aria-pressed={index === selectedConversationIndex}>
               <span className={`avatar avatar-${conversation.tone}`}>{conversation.initials}</span>
               <span className="conversation-copy"><strong>{conversation.name}</strong><span>{conversation.preview}</span></span>
               <span className="conversation-meta"><small>{conversation.time}</small>{conversation.unread > 0 && <b>{conversation.unread}</b>}</span>
@@ -73,24 +75,26 @@ function SignedInView({ session, onLogout }: SignedInViewProps) {
         </div>
       </aside>
 
-      <section className="chat-panel" aria-label="Ece Yılmaz ile konuşma">
+      <section className="chat-panel" aria-label={`${selectedConversation.name} ile konuşma`}>
         <header className="chat-header">
-          <div className="chat-person"><span className="avatar avatar-peach">EY</span><div><h2>Ece Yılmaz</h2><span><i className="online-dot" /> Şu an aktif</span></div></div>
+          <div className="chat-person"><span className={`avatar avatar-${selectedConversation.tone}`}>{selectedConversation.initials}</span><div><h2>{selectedConversation.name}</h2><span><i className="online-dot" /> {selectedConversation.status}</span></div></div>
           <div className="chat-actions"><button className="icon-button" type="button" aria-label="Ara">⌕</button><button className="icon-button" type="button" aria-label="Daha fazla seçenek">•••</button></div>
         </header>
         <div className="message-area">
           <div className="day-divider"><span>BUGÜN</span></div>
-          <div className="message-row incoming"><span className="avatar avatar-peach small-avatar">EY</span><div><span className="message-author">Ece Yılmaz</span><p>Selam! Yeni sunum dosyasına bakabildin mi?</p><time>10:37</time></div></div>
-          <div className="message-row outgoing"><div><p>Baktım, giriş bölümüne birkaç not bıraktım. Genel akış çok iyi görünüyor.</p><time>10:39 <span className="read-mark">✓✓</span></time></div></div>
-          <div className="message-row incoming"><span className="avatar avatar-peach small-avatar">EY</span><div><p>Harika, teşekkürler! Son halini birazdan paylaşırım.</p><time>10:40</time></div></div>
-          <div className="message-row outgoing"><div><p>Sunum için son dosyayı bekliyorum, sonra müşteriye iletebiliriz.</p><time>10:42 <span className="read-mark">✓✓</span></time></div></div>
+          {selectedConversation.messages.map((message, index) => (
+            <div className={`message-row ${index % 2 === 0 ? 'incoming' : 'outgoing'}`} key={`${selectedConversation.name}-${message}`}>
+              {index % 2 === 0 && <span className={`avatar avatar-${selectedConversation.tone} small-avatar`}>{selectedConversation.initials}</span>}
+              <div>{index === 0 && <span className="message-author">{selectedConversation.name}</span>}<p>{message}</p><time>{['10:37', '10:39', '10:40', '10:42'][index]} {index % 2 === 1 && <span className="read-mark">✓✓</span>}</time></div>
+            </div>
+          ))}
         </div>
         <div className="composer-wrap"><div className="composer"><button className="composer-tool" type="button" aria-label="Dosya ekle">+</button><input placeholder="Bir mesaj yaz..." aria-label="Mesaj yaz" /><button className="composer-tool" type="button" aria-label="Emoji ekle">☺</button><button className="send-button" type="button" aria-label="Mesaj gönder">↑</button></div><small>Mesajların uçtan uca şifrelenir.</small></div>
       </section>
 
       <aside className="details-sidebar">
         <div className="details-top"><span className="eyebrow">KİŞİ BİLGİSİ</span><button className="icon-button" type="button" aria-label="Paneli kapat">×</button></div>
-        <div className="contact-summary"><span className="avatar avatar-peach large-avatar">EY</span><h2>Ece Yılmaz</h2><p>@eceyilmaz</p><span className="active-label"><i className="online-dot" /> Aktif şimdi</span></div>
+        <div className="contact-summary"><span className={`avatar avatar-${selectedConversation.tone} large-avatar`}>{selectedConversation.initials}</span><h2>{selectedConversation.name}</h2><p>{selectedConversation.handle}</p><span className="active-label"><i className="online-dot" /> {selectedConversation.status}</span></div>
         <div className="details-section"><span className="detail-label">PAYLAŞILAN MEDYA</span><div className="media-grid"><span>Sunum-v3.pdf</span><span>brief-notes.docx</span><span>IMG_2048.png</span></div></div>
         <button className="logout-button" type="button" onClick={onLogout}>Oturumu kapat <span>↗</span></button>
       </aside>
