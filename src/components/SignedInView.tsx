@@ -92,12 +92,6 @@ function SignedInView({ session, onLogout }: SignedInViewProps) {
         <div className="composer-wrap"><div className="composer"><button className="composer-tool" type="button" aria-label="Dosya ekle">+</button><input placeholder="Bir mesaj yaz..." aria-label="Mesaj yaz" /><button className="composer-tool" type="button" aria-label="Emoji ekle">☺</button><button className="send-button" type="button" aria-label="Mesaj gönder">↑</button></div><small>Mesajların uçtan uca şifrelenir.</small></div>
       </section>
 
-      <aside className="details-sidebar">
-        <div className="details-top"><span className="eyebrow">KİŞİ BİLGİSİ</span><button className="icon-button" type="button" aria-label="Paneli kapat">×</button></div>
-        <div className="contact-summary"><span className={`avatar avatar-${selectedConversation.tone} large-avatar`}>{selectedConversation.initials}</span><h2>{selectedConversation.name}</h2><p>{selectedConversation.handle}</p><span className="active-label"><i className="online-dot" /> {selectedConversation.status}</span></div>
-        <div className="details-section"><span className="detail-label">PAYLAŞILAN MEDYA</span><div className="media-grid"><span>Sunum-v3.pdf</span><span>brief-notes.docx</span><span>IMG_2048.png</span></div></div>
-        <button className="logout-button" type="button" onClick={onLogout}>Oturumu kapat <span>↗</span></button>
-      </aside>
     </main>
   )
 }
