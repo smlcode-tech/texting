@@ -24,6 +24,13 @@ export type Message = {
   isMine: boolean
 }
 
+export type User = {
+  id: string
+  displayName: string | null
+  username: string | null
+  email: string
+}
+
 type ConversationRow = {
   id: string
   title: string | null
@@ -160,5 +167,59 @@ export function useConversations(session: Session) {
     await loadConversations()
   }
 
-  return { conversations, isLoading, error, sendMessage, reload: loadConversations }
+  const getAvailableUsers = async (): Promise<User[]> => {
+    setError('')
+    const { data: profiles, error: profilesError } = await supabase
+      .from('profiles')
+      .select('id, display_name, username')
+      .neq('id', session.user.id)
+      .order('display_name')
+
+    if (profilesError) {
+      setError(profilesError.message)
+      return []
+    }
+
+    return (profiles ?? []).map((profile) => ({
+      id: profile.id,
+      displayName: profile.display_name,
+      username: profile.username,
+      email: '', // Email not available from profiles table
+    }))
+  }
+
+  const createConversation = async (otherUserId: string): Promise<string | null> => {
+    setError('')
+    
+    // Create the conversation
+    const { data: conversation, error: createError } = await supabase
+      .from('conversations')
+      .insert({ title: null })
+      .select('id')
+      .single()
+
+    if (createError || !conversation) {
+      setError(createError?.message ?? 'Konuşma oluşturulamadı.')
+      return null
+    }
+
+    // Add both users as members
+    const { error: membersError } = await supabase
+      .from('conversation_members')
+      .insert([
+        { conversation_id: conversation.id, user_id: session.user.id },
+        { conversation_id: conversation.id, user_id: otherUserId },
+      ])
+
+    if (membersError) {
+      setError(membersError.message)
+      return null
+    }
+
+    // Reload conversations to show the new one
+    await loadConversations()
+    return conversation.id
+  }
+
+  return { conversations, isLoading, error, sendMessage, reload: loadConversations, createConversation, getAvailableUsers }
 }

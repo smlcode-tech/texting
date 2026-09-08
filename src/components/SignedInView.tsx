@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import { useConversations } from '../hooks/useConversations'
+import NewConversationDialog from './NewConversationDialog'
 
 const formatTime = (value: string) => new Intl.DateTimeFormat('tr-TR', { hour: '2-digit', minute: '2-digit' }).format(new Date(value))
 
@@ -13,6 +14,7 @@ function SignedInView({ session, onLogout }: SignedInViewProps) {
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false)
   const [selectedConversationIndex, setSelectedConversationIndex] = useState(0)
   const [messageDraft, setMessageDraft] = useState('')
+  const [isNewConversationDialogOpen, setIsNewConversationDialogOpen] = useState(false)
   const accountMenuRef = useRef<HTMLDivElement>(null)
   const { conversations, isLoading, error, sendMessage } = useConversations(session)
 
@@ -48,7 +50,7 @@ function SignedInView({ session, onLogout }: SignedInViewProps) {
       <aside className="conversation-sidebar">
         <header className="sidebar-header">
           <div className="brand-row"><div className="brand-mark" aria-hidden="true">t</div><strong>texting</strong></div>
-          <button className="icon-button" type="button" aria-label="Yeni mesaj">+</button>
+          <button className="icon-button" type="button" aria-label="Yeni mesaj" onClick={() => setIsNewConversationDialogOpen(true)}>+</button>
         </header>
         <div className="sidebar-title"><div><span className="eyebrow">MESAJLAR</span><h1>Konuşmalar</h1></div><span className="conversation-count">{conversations.length}</span></div>
         <label className="search-box"><span aria-hidden="true">⌕</span><input placeholder="Konuşmalarda ara" aria-label="Konuşmalarda ara" /></label>
@@ -81,6 +83,16 @@ function SignedInView({ session, onLogout }: SignedInViewProps) {
           </div>
         </div>
       </aside>
+
+      <NewConversationDialog
+        session={session}
+        isOpen={isNewConversationDialogOpen}
+        onClose={() => setIsNewConversationDialogOpen(false)}
+        onConversationCreated={(conversationId) => {
+          const index = conversations.findIndex((c) => c.id === conversationId)
+          if (index >= 0) setSelectedConversationIndex(index)
+        }}
+      />
 
       {selectedConversation ? <section className="chat-panel" aria-label={`${selectedConversation.name} ile konuşma`}>
         <header className="chat-header">
