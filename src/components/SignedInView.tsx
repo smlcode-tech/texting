@@ -16,7 +16,7 @@ function SignedInView({ session, onLogout }: SignedInViewProps) {
   const [messageDraft, setMessageDraft] = useState('')
   const [isNewConversationDialogOpen, setIsNewConversationDialogOpen] = useState(false)
   const accountMenuRef = useRef<HTMLDivElement>(null)
-  const { conversations, isLoading, error, sendMessage } = useConversations(session)
+  const { conversations, isLoading, error, sendMessage, getAvailableUsers, createConversation } = useConversations(session)
 
   useEffect(() => {
     if (!isAccountMenuOpen) return
@@ -85,9 +85,10 @@ function SignedInView({ session, onLogout }: SignedInViewProps) {
       </aside>
 
       <NewConversationDialog
-        session={session}
         isOpen={isNewConversationDialogOpen}
         onClose={() => setIsNewConversationDialogOpen(false)}
+        getAvailableUsers={getAvailableUsers}
+        createConversation={createConversation}
         onConversationCreated={(conversationId) => {
           const index = conversations.findIndex((c) => c.id === conversationId)
           if (index >= 0) setSelectedConversationIndex(index)

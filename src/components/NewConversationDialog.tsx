@@ -1,22 +1,19 @@
 import { useEffect, useState } from 'react'
-import type { Session } from '@supabase/supabase-js'
 import type { User } from '../hooks/useConversations'
-import { useConversations } from '../hooks/useConversations'
 
 type NewConversationDialogProps = {
-  session: Session
   isOpen: boolean
   onClose: () => void
   onConversationCreated: (conversationId: string) => void
+  getAvailableUsers: () => Promise<User[]>
+  createConversation: (otherUserId: string) => Promise<string | null>
 }
 
-function NewConversationDialog({ session, isOpen, onClose, onConversationCreated }: NewConversationDialogProps) {
+function NewConversationDialog({ isOpen, onClose, onConversationCreated, getAvailableUsers, createConversation }: NewConversationDialogProps) {
   const [users, setUsers] = useState<User[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
   const [error, setError] = useState('')
-  const { getAvailableUsers, createConversation } = useConversations(session)
-
   useEffect(() => {
     if (!isOpen) return
 
