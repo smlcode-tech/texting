@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import { supabase } from '../supabase'
 
@@ -60,7 +60,7 @@ export function useConversations(session: Session) {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
 
-  const loadConversations = async () => {
+  const loadConversations = useCallback(async () => {
     setIsLoading(true)
     setError('')
 
@@ -142,7 +142,7 @@ export function useConversations(session: Session) {
 
     setConversations(nextConversations)
     setIsLoading(false)
-  }
+  }, [session.user.id])
 
   useEffect(() => {
     void loadConversations()
@@ -153,9 +153,9 @@ export function useConversations(session: Session) {
     return () => {
       void supabase.removeChannel(channel)
     }
-  }, [session.user.id])
+  }, [loadConversations, session.user.id])
 
-  const sendMessage = async (conversationId: string, body: string) => {
+  const sendMessage = useCallback(async (conversationId: string, body: string) => {
     const trimmedBody = body.trim()
     if (!trimmedBody) return
     const { error: sendError } = await supabase.from('messages').insert({ conversation_id: conversationId, sender_id: session.user.id, body: trimmedBody })
@@ -165,9 +165,9 @@ export function useConversations(session: Session) {
     }
     await supabase.from('conversations').update({ updated_at: new Date().toISOString() }).eq('id', conversationId)
     await loadConversations()
-  }
+  }, [loadConversations, session.user.id])
 
-  const getAvailableUsers = async (): Promise<User[]> => {
+  const getAvailableUsers = useCallback(async (): Promise<User[]> => {
     setError('')
     const { data: profiles, error: profilesError } = await supabase
       .from('profiles')
@@ -186,9 +186,9 @@ export function useConversations(session: Session) {
       username: profile.username,
       email: '', // Email not available from profiles table
     }))
-  }
+  }, [session.user.id])
 
-  const createConversation = async (otherUserId: string): Promise<string | null> => {
+  const createConversation = useCallback(async (otherUserId: string): Promise<string | null> => {
     setError('')
     
     // Create the conversation
@@ -219,7 +219,7 @@ export function useConversations(session: Session) {
     // Reload conversations to show the new one
     await loadConversations()
     return conversation.id
-  }
+  }, [loadConversations, session.user.id])
 
   return { conversations, isLoading, error, sendMessage, reload: loadConversations, createConversation, getAvailableUsers }
 }
