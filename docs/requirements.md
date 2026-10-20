@@ -18,7 +18,7 @@ Durum işaretleri: ✅ çalışıyor · ⚠️ kısmen (altyapı var, arayüz yo
 | FR-5 | Çıkış | ✅ | |
 | FR-6 | Parola sıfırlama | ❌ | |
 | FR-7 | Telefon/SMS ile giriş | ❌ | roadmap |
-| FR-8 | Google/Apple ile giriş | ❌ | Google, Supabase Auth ayarlarında açık ama arayüzde butonu yok |
+| FR-8 | Google ile giriş (Apple yok) | ✅ | `AuthScreen` içinde "Google ile devam et"; çıkış tüm oturumları kapatır (`scope: 'global'`) |
 
 ### Profil
 | # | Gereksinim | Durum | Not |
@@ -59,7 +59,7 @@ Durum işaretleri: ✅ çalışıyor · ⚠️ kısmen (altyapı var, arayüz yo
 | NFR-5 | Gizlilik | Profillerin görünürlüğü kısıtlı olmalı | ⚠️ | MVP gereği her oturumlu kullanıcı tüm profilleri okuyabiliyor |
 | NFR-6 | Güvenlik | Sızdırılmış parola koruması | ⚠️ | Supabase'de kapalı (advisor uyarısı) |
 | NFR-7 | Veri bütünlüğü | Mesaj uzunluğu 1–4000 karakter | ⚠️ | Veritabanı kontrol ediyor; arayüzde sınır ya da sayaç yok |
-| NFR-8 | Gizli bilgiler | Anahtarlar `.env` dosyasında, git dışında | ✅ / ⚠️ | `.env.example` içindeki URL hâlâ `/rest/v1/` ile bitiyor (yanlış) |
+| NFR-8 | Gizli bilgiler | Anahtarlar `.env` dosyasında, git dışında | ✅ | `.env.example` URL'si düzeltildi |
 | NFR-9 | Performans | Sorgu indeksleri | ✅ | participants(user_id), messages(conversation_id, created_at) |
 | NFR-10 | Performans | Gelen her mesajda sohbet listesinin tamamı yeniden çekiliyor | ⚠️ | Kullanıcı sayısı büyüdükçe maliyetli olur |
 | NFR-11 | Güvenilirlik | Bağlantı koptuktan sonra kaçırılan mesajların yeniden senkronize edilmesi | ❌ | Yeniden bağlanınca veri tekrar çekilmiyor (kod incelemesine göre) |
@@ -88,7 +88,9 @@ Durum işaretleri: ✅ çalışıyor · ⚠️ kısmen (altyapı var, arayüz yo
 5. `.claude/launch.json` eklendi (commit `0274949`).
 6. `.env` oluşturuldu (git dışında) ve URL düzeltildi; `.env.example` düzeltilmedi.
 7. graphify grafiği üretildi (`graphify-out/`, commit edilmedi), `tree-sitter-sql` kuruldu.
-8. Commit'ler `fix/db-function-grants` dalında; push edilmedi.
+8. Commit'ler `fix/db-function-grants` dalında.
+9. GitHub'daki `main` bir süre Next.js uygulamasıydı (5–11 Eylül, 20 commit). Next.js tamamen kaldırıldı; `main` bu Vite dalına sıfırlandı. Eski Next.js geçmişi `backup/nextjs-main` etiketinde duruyor.
+10. Next.js sürümündeki Google ile giriş Vite'ye taşındı. Vercel için `vercel.json` (`framework: vite`) eklendi.
 
 ## Doğrulama
 - Durumlar `src/` kodundan, canlıdaki `list_tables`/`pg_policies` sorgularından ve `npx vitest run` çıktısından (15/15) alındı.
