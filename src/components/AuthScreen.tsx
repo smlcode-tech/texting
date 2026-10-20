@@ -74,6 +74,28 @@ export function AuthScreen() {
     if (signInError) setError('E-posta veya parola hatalı ya da e-posta henüz doğrulanmadı.')
   }
 
+  const signInWithGoogle = async () => {
+    setError('')
+    setNotice('')
+
+    if (!isSupabaseConfigured) {
+      setError('Supabase bağlantısı yapılandırılmamış. .env dosyasını oluşturun.')
+      return
+    }
+
+    setIsBusy(true)
+    // prompt=login: çıkıştan sonra Google hesabı otomatik seçilmesin.
+    const { error: googleError } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin,
+        queryParams: { prompt: 'login' },
+      },
+    })
+    setIsBusy(false)
+    if (googleError) setError(googleError.message)
+  }
+
   const verifyOtp = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     setError('')
@@ -171,6 +193,16 @@ export function AuthScreen() {
                 Kayıt ol
               </button>
             </div>
+            <button
+              className="google-button"
+              type="button"
+              onClick={() => void signInWithGoogle()}
+              disabled={isBusy}
+            >
+              <span className="google-mark" aria-hidden="true">G</span>
+              {isBusy ? 'Bekleyin...' : 'Google ile devam et'}
+            </button>
+            <div className="auth-divider"><span>veya e-posta ile</span></div>
             <form onSubmit={submit} noValidate>
               {mode === 'register' && (
                 <label>

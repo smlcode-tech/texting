@@ -28,7 +28,7 @@ export function useAuth() {
   }, [])
 
   const signOut = useCallback(async () => {
-    await supabase.auth.signOut()
+    await supabase.auth.signOut({ scope: 'global' })
   }, [])
 
   return { session, isSessionLoading, signOut }
