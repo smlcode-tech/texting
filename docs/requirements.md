@@ -70,7 +70,7 @@ Durum işaretleri: ✅ çalışıyor · ⚠️ kısmen (altyapı var, arayüz yo
 | NFR-16 | Test | Hook, RLS (pgTAP) ve uçtan uca testler | ❌ | |
 | NFR-17 | Bakım | Şema migration dosyalarıyla yönetiliyor | ✅ / ⚠️ | Silme migration'ı `0000_drop_legacy_chat_schema` yalnızca uzak geçmişte var, repoda yok |
 | NFR-18 | Bakım | Bağımlılık sürümleri sabit | ⚠️ | Test araçları `latest` |
-| NFR-19 | Operasyon | CI, deploy, izleme | ❌ | Supabase ücretsiz planı kullanılmadığında projeyi duraklatıyor (bugün yaşandı) |
+| NFR-19 | Operasyon | CI, deploy, izleme | ⚠️ | Deploy: Cloudflare Workers Builds (`wrangler.jsonc`). CI testleri ve izleme yok. Supabase ücretsiz planı kullanılmadığında projeyi duraklatıyor |
 
 ## Neler değişti
 
@@ -91,6 +91,7 @@ Durum işaretleri: ✅ çalışıyor · ⚠️ kısmen (altyapı var, arayüz yo
 8. Commit'ler `fix/db-function-grants` dalında.
 9. GitHub'daki `main` bir süre Next.js uygulamasıydı (5–11 Eylül, 20 commit). Next.js tamamen kaldırıldı; `main` bu Vite dalına sıfırlandı. Eski Next.js geçmişi `backup/nextjs-main` etiketinde duruyor.
 10. Next.js sürümündeki Google ile giriş Vite'ye taşındı. Vercel için `vercel.json` (`framework: vite`) eklendi.
+11. Dağıtım Vercel'den Cloudflare Workers'a (statik varlıklar, Workers Builds) taşındı: `vercel.json` silindi, `wrangler.jsonc` eklendi. `VITE_*` değişkenleri Cloudflare'de build değişkeni olarak tanımlanmalı; yeni domain Supabase Auth Redirect URLs listesine eklenmeli.
 
 ## Doğrulama
 - Durumlar `src/` kodundan, canlıdaki `list_tables`/`pg_policies` sorgularından ve `npx vitest run` çıktısından (15/15) alındı.

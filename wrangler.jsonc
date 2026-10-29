@@ -1,0 +1,16 @@
+// Cloudflare Workers dağıtım yapılandırması. Vercel'deki vercel.json'un yerini alır.
+// Uygulama tamamen statik bir Vite SPA olduğu için Worker kodu yoktur;
+// Cloudflare yalnızca `vite build` çıktısını (dist/) statik varlık olarak sunar.
+// Supabase değişkenleri (VITE_*) build sırasında koda gömüldüğünden burada değil,
+// Cloudflare panelindeki Workers Builds "Build variables" bölümünde tanımlanır.
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "texting",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    // Bilinmeyen yollar 404 yerine index.html döndürür; ileride client-side
+    // router eklendiğinde derin linklerin yenilemede kırılmaması için.
+    "not_found_handling": "single-page-application"
+  }
+}
