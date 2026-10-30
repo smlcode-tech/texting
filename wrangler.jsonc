@@ -1,0 +1,21 @@
+// Cloudflare Workers Static Assets yapılandırması.
+// Uygulama tamamen istemci tarafında çalışan bir Vite SPA'dır; backend Supabase'dedir.
+// Bu yüzden Worker betiği ("main") yoktur: Cloudflare yalnızca `npm run build` çıktısı olan
+// dist/ klasörünü sunar ve statik dosya istekleri Worker çağrısı sayılmadığı için ücretlendirilmez.
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  // Worker adı; varsayılan adres https://texting.<hesap-alt-alanı>.workers.dev olur.
+  // Değiştirilirse Supabase Auth "Redirect URLs" listesindeki adres de güncellenmelidir.
+  "name": "texting",
+  // Workers runtime davranışını bu tarihe sabitler; Cloudflare sonradan varsayılanları değiştirse
+  // bile deploy'lar aynı davranışı korur.
+  "compatibility_date": "2026-10-30",
+  "assets": {
+    // Vite'in varsayılan build çıktısı (vite.config.ts'de outDir değiştirilmedi).
+    "directory": "./dist",
+    // Workers, Pages'in aksine SPA olduğunu kendiliğinden anlamaz. Eşleşmeyen yollar
+    // (ör. Google girişinden dönüş ya da ileride eklenecek istemci rotaları) 404 yerine
+    // index.html ile 200 dönsün diye açıkça ayarlanır.
+    "not_found_handling": "single-page-application"
+  }
+}

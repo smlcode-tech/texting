@@ -2,6 +2,10 @@ node_modules
 dist
 .vercel
 
+# Cloudflare Wrangler yerel durumu ve yerel gizli değişken dosyaları
+.wrangler
+.dev.vars*
+
 # Local environment files
 .env
 .env.*
