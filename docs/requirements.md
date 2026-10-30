@@ -91,7 +91,7 @@ Durum işaretleri: ✅ çalışıyor · ⚠️ kısmen (altyapı var, arayüz yo
 8. Commit'ler `fix/db-function-grants` dalında.
 9. GitHub'daki `main` bir süre Next.js uygulamasıydı (5–11 Eylül, 20 commit). Next.js tamamen kaldırıldı; `main` bu Vite dalına sıfırlandı. Eski Next.js geçmişi `backup/nextjs-main` etiketinde duruyor.
 10. Next.js sürümündeki Google ile giriş Vite'ye taşındı. Vercel için `vercel.json` (`framework: vite`) eklendi.
-11. Dağıtım Vercel'den Cloudflare Workers'a (statik varlıklar, Workers Builds) taşındı: `vercel.json` silindi, `wrangler.jsonc` eklendi. `VITE_*` değişkenleri Cloudflare'de build değişkeni olarak tanımlanmalı; yeni domain Supabase Auth Redirect URLs listesine eklenmeli.
+11. Dağıtım Vercel'den Cloudflare Workers'a (statik varlıklar, Workers Builds) taşındı: `wrangler.jsonc` eklendi. `vercel.json` geçiş bitene kadar tutuluyor; Vercel paneli projeyi hâlâ Next.js sanıyor ve dosya silinirse Vercel build'i `NEXT_NO_VERSION` hatasıyla kırılıyor. Vercel projesi kapatıldığında silinmeli. `VITE_*` değişkenleri Cloudflare'de build değişkeni olarak tanımlanmalı; yeni domain Supabase Auth Redirect URLs listesine eklenmeli.
 
 ## Doğrulama
 - Durumlar `src/` kodundan, canlıdaki `list_tables`/`pg_policies` sorgularından ve `npx vitest run` çıktısından (15/15) alındı.
