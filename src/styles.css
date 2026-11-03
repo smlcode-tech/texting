@@ -109,3 +109,31 @@ input:focus { border-color: #69998a; box-shadow: 0 0 0 3px rgba(105,153,138,.14)
 .profile-name { font-size: 14px; font-weight: 700; color: #20312f; }
 @media (max-width: 860px) { .chat-shell { grid-template-columns: 1fr; } .conversation-panel { min-height: auto; } .thread-panel { min-height: 70vh; max-height: none; } }
 
+
+/* Arkadaşlık istekleri (0007): kenar çubuğu paneli ve "Arkadaş ekle" penceresi */
+.own-username { color: #b9d2c6; font-size: 12px; margin: 0; }
+.own-username strong { color: #f8f5ed; }
+.friend-requests { display: grid; gap: 8px; border: 1px solid rgba(144,183,168,.35); border-radius: 8px; padding: 12px; }
+.friend-requests h3 { margin: 0; font-size: 12px; letter-spacing: .04em; color: #d7e5de; display: flex; align-items: center; gap: 8px; }
+.request-count { background: #d17f43; color: #fffaf2; border-radius: 999px; padding: 1px 7px; font-size: 11px; }
+.friend-request-items { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.friend-request-item { display: grid; grid-template-columns: auto 1fr; gap: 6px 10px; align-items: center; }
+.friend-request-item .conversation-name { color: #f8f5ed; }
+.request-meta { display: grid; min-width: 0; }
+.request-username { font-size: 11px; color: #90b7a8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.request-actions { grid-column: 1 / -1; display: flex; gap: 6px; }
+.request-accept, .request-decline { flex: 1; border-radius: 3px; padding: 7px 10px; font-size: 12px; font-weight: 700; }
+.request-accept { border: 0; background: #d17f43; color: #fffaf2; }
+.request-accept:hover { background: #b96833; }
+.request-decline { border: 1px solid #90b7a8; background: transparent; color: #d7e5de; }
+.request-decline:hover { background: rgba(255,255,255,.08); }
+.request-accept:disabled, .request-decline:disabled { opacity: .6; }
+.dialog-hint { color: #71807b; font-size: 13px; line-height: 1.5; margin: 0; }
+.dialog-hint strong { color: #183d3a; }
+.add-friend-form { display: grid; gap: 12px; }
+.request-section { display: grid; gap: 8px; }
+.request-section h3 { margin: 0; font-size: 13px; color: #183d3a; }
+.profile-item.static { cursor: default; }
+.profile-item.static:hover { border-color: #e2ddd2; }
+.request-section .request-username { color: #71807b; }
+.request-badge { margin-left: auto; font-size: 11px; color: #b96833; background: #fdf3e9; border-radius: 999px; padding: 2px 8px; }
