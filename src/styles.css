@@ -137,3 +137,6 @@ input:focus { border-color: #69998a; box-shadow: 0 0 0 3px rgba(105,153,138,.14)
 .profile-item.static:hover { border-color: #e2ddd2; }
 .request-section .request-username { color: #71807b; }
 .request-badge { margin-left: auto; font-size: 11px; color: #b96833; background: #fdf3e9; border-radius: 999px; padding: 2px 8px; }
+
+/* Realtime join hatası: sorun teşhisi için sebep metniyle birlikte gösterilir */
+.live-banner { grid-column: 1 / -1; margin: 0; padding: 10px 16px; background: #fdf3e9; color: #8a4a1d; border-bottom: 1px solid #f0d3b8; font-size: 12px; line-height: 1.5; word-break: break-word; }
