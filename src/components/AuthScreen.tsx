@@ -55,6 +55,16 @@ export function AuthScreen() {
         options: { data: { name: name.trim() } },
       })
       setIsBusy(false)
+      // E-posta onayı açıkken Supabase kayıtlı adres için hata yerine boş identities döner.
+      const isAlreadyRegistered =
+        signUpError?.code === 'user_already_exists' ||
+        (!signUpError && data.user?.identities?.length === 0)
+      if (isAlreadyRegistered) {
+        switchMode('login')
+        setEmail(normalizedEmail)
+        setError('Bu e-posta adresiyle zaten bir hesap var. Lütfen giriş yapın.')
+        return
+      }
       if (signUpError) {
         setError(signUpError.message)
         return
