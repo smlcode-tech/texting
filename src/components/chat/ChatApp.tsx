@@ -1,10 +1,17 @@
+// Oturum açmış kullanıcının ana ekranı: sohbet listesi, istekler ve mesaj alanı.
+// Mimarideki yeri: hook'ları (sohbetler, mesajlar, arkadaşlık istekleri) tek yerde
+// toplayıp alt bileşenlere dağıtan kompozisyon katmanı.
 import { useState } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import { useConversations } from '../../hooks/useConversations'
+import { useFriendRequests } from '../../hooks/useFriendRequests'
 import { useMessages } from '../../hooks/useMessages'
+import { useOwnProfile } from '../../hooks/useOwnProfile'
+import { partitionRequests } from '../../lib/friendRequests'
+import { AddFriendDialog } from './AddFriendDialog'
 import { ConversationList } from './ConversationList'
+import { FriendRequestsPanel } from './FriendRequestsPanel'
 import { MessageThread } from './MessageThread'
-import { NewConversationDialog } from './NewConversationDialog'
 
 type Props = {
   session: Session
@@ -19,6 +26,8 @@ export function ChatApp({ session, onSignOut }: Props) {
     error: conversationsError,
     reload,
   } = useConversations()
+  const { requests, send, respond } = useFriendRequests()
+  const ownProfile = useOwnProfile(currentUserId)
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const {
@@ -28,12 +37,15 @@ export function ChatApp({ session, onSignOut }: Props) {
     sendMessage,
   } = useMessages(activeConversationId)
 
+  const { incoming, outgoing } = partitionRequests(requests)
+
   const activeConversation =
     conversations.find((conversation) => conversation.id === activeConversationId) ?? null
 
   const handleSend = (body: string) => sendMessage(body, currentUserId)
 
-  const handleCreated = (conversationId: string) => {
+  // Kabulde (bizim kabulümüz ya da karşılıklı istekte otomatik kabul) yeni sohbete geç.
+  const openConversation = (conversationId: string) => {
     setIsDialogOpen(false)
     setActiveConversationId(conversationId)
     void reload()
@@ -45,10 +57,14 @@ export function ChatApp({ session, onSignOut }: Props) {
         conversations={conversations}
         activeConversationId={activeConversationId}
         currentUserId={currentUserId}
+        ownUsername={ownProfile?.username ?? null}
         isLoading={isLoadingConversations}
         error={conversationsError}
+        requestsPanel={
+          <FriendRequestsPanel incoming={incoming} onRespond={respond} onAccepted={openConversation} />
+        }
         onSelect={setActiveConversationId}
-        onNewConversation={() => setIsDialogOpen(true)}
+        onAddFriend={() => setIsDialogOpen(true)}
         onSignOut={onSignOut}
       />
 
@@ -62,10 +78,12 @@ export function ChatApp({ session, onSignOut }: Props) {
       />
 
       {isDialogOpen && (
-        <NewConversationDialog
-          currentUserId={currentUserId}
+        <AddFriendDialog
+          ownUsername={ownProfile?.username ?? null}
+          outgoing={outgoing}
+          onSend={send}
           onClose={() => setIsDialogOpen(false)}
-          onCreated={handleCreated}
+          onConversationReady={openConversation}
         />
       )}
     </main>

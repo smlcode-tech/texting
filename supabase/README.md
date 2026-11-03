@@ -22,6 +22,8 @@ VITE_SUPABASE_ANON_KEY=your-publishable-or-anon-key
    - `0003_messages.sql`
    - `0004_rls_policies.sql`
    - `0005_realtime.sql`
+   - `0006_revoke_function_grants.sql`
+   - `0007_friend_requests.sql`
 
 ### Seçenek B — Supabase CLI
 
@@ -37,3 +39,5 @@ supabase db push
 - `0004_rls_policies.sql` tüm tablolarda RLS'i etkinleştirir; her tablo yalnızca ilgili kullanıcılar tarafından erişilebilir.
 - `0005_realtime.sql`, `messages` ve `conversation_participants` tablolarını `supabase_realtime` publication'ına ekler. Realtime RLS'e uyar: bir kullanıcı yalnızca üyesi olduğu sohbetlerin olaylarını alır.
 - `profiles` tablosu MVP gereği tüm oturumlu kullanıcılara okunabilir; üretimde kısıtlanması önerilir.
+- `0007_friend_requests.sql` kullanıcı izolasyonunu getirir: `profiles` artık herkese açık değildir; kullanıcı yalnızca kendisini, arkadaşlarını, bekleyen isteklerinin karşı tarafını ve sohbet arkadaşlarını görür. Her profile benzersiz bir `username` eklenir (mevcut kullanıcılar e-posta önekinden doldurulur). Sohbetler yalnızca arkadaşlık isteği kabul edildiğinde `send_friend_request` / `respond_friend_request` RPC'leri içinden oluşur; eski `create_direct_conversation` kaldırılır. Reddedilen taraf aynı kişiye 7 gün sonra tekrar istek gönderebilir.
+- `0007` uygulandığı anda eski frontend'in "Yeni sohbet" akışı çalışmaz (`create_direct_conversation` silinir); migration'ı yeni frontend dağıtımıyla birlikte uygulayın.

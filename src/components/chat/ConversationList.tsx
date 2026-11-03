@@ -1,3 +1,7 @@
+// Kenar çubuğu: marka, kullanıcının kendi @adı, gelen istekler ve sohbet listesi.
+// Mimarideki yeri: ChatApp'in sol paneli; istek paneli ReactNode olarak dışarıdan
+// verilir ki bu bileşen arkadaşlık isteklerinin mantığını bilmek zorunda kalmasın.
+import type { ReactNode } from 'react'
 import { conversationDisplayName, otherParticipant } from '../../lib/conversations'
 import { formatConversationTimestamp, messagePreview } from '../../lib/format'
 import type { ConversationSummary } from '../../types/chat'
@@ -7,10 +11,12 @@ type Props = {
   conversations: ConversationSummary[]
   activeConversationId: string | null
   currentUserId: string
+  ownUsername: string | null
   isLoading: boolean
   error: string
+  requestsPanel: ReactNode
   onSelect: (conversationId: string) => void
-  onNewConversation: () => void
+  onAddFriend: () => void
   onSignOut: () => void
 }
 
@@ -18,10 +24,12 @@ export function ConversationList({
   conversations,
   activeConversationId,
   currentUserId,
+  ownUsername,
   isLoading,
   error,
+  requestsPanel,
   onSelect,
-  onNewConversation,
+  onAddFriend,
   onSignOut,
 }: Props) {
   return (
@@ -34,16 +42,20 @@ export function ConversationList({
         <button className="signout-button" type="button" onClick={onSignOut}>Çıkış</button>
       </header>
 
-      <button className="new-conversation-button" type="button" onClick={onNewConversation}>
-        + Yeni sohbet
+      {ownUsername && <p className="own-username">Kullanıcı adın: <strong>@{ownUsername}</strong></p>}
+
+      <button className="new-conversation-button" type="button" onClick={onAddFriend}>
+        + Arkadaş ekle
       </button>
+
+      {requestsPanel}
 
       {error && <p className="form-message error" role="alert">{error}</p>}
 
       {isLoading ? (
         <p className="panel-hint">Sohbetler yükleniyor…</p>
       ) : conversations.length === 0 ? (
-        <p className="panel-hint">Henüz sohbet yok. “Yeni sohbet” ile başla.</p>
+        <p className="panel-hint">Henüz sohbet yok. “Arkadaş ekle” ile istek gönder; kabul edilince sohbet burada açılır.</p>
       ) : (
         <ul className="conversation-items">
           {conversations.map((conversation) => {

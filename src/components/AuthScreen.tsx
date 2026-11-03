@@ -1,11 +1,17 @@
+// Giriş, kayıt (e-posta + OTP) ve Google ile giriş ekranı.
+// Mimarideki yeri: oturum yokken App'in gösterdiği tek ekran. Kayıtta seçilen
+// kullanıcı adı auth metadata ile gönderilir; profiles kaydını veritabanındaki
+// handle_new_user tetikleyicisi oluşturur (bkz. 0007_friend_requests.sql).
 import { FormEvent, useState } from 'react'
 import { isSupabaseConfigured, supabase } from '../lib/supabase'
+import { normalizeUsername, validateUsername } from '../lib/username'
 import type { AuthStep, Mode } from '../types/auth'
 
 export function AuthScreen() {
   const [mode, setMode] = useState<Mode>('login')
   const [step, setStep] = useState<AuthStep>('credentials')
   const [name, setName] = useState('')
+  const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [otp, setOtp] = useState('')
@@ -49,10 +55,18 @@ export function AuthScreen() {
         setIsBusy(false)
         return
       }
+      const usernameError = validateUsername(username)
+      if (usernameError) {
+        setError(usernameError)
+        setIsBusy(false)
+        return
+      }
+      // Alınmış kullanıcı adı kaydı bozmaz: tetikleyici e-posta önekinden yenisini
+      // üretir. Kullanıcı gerçek adını uygulamadaki "Kullanıcı adın" satırında görür.
       const { data, error: signUpError } = await supabase.auth.signUp({
         email: normalizedEmail,
         password,
-        options: { data: { name: name.trim() } },
+        options: { data: { name: name.trim(), username: normalizeUsername(username) } },
       })
       setIsBusy(false)
       if (signUpError) {
@@ -212,6 +226,20 @@ export function AuthScreen() {
                     onChange={(event) => setName(event.target.value)}
                     placeholder="Örn. Deniz Yılmaz"
                     autoComplete="name"
+                  />
+                </label>
+              )}
+              {mode === 'register' && (
+                <label>
+                  Kullanıcı adı
+                  <input
+                    value={username}
+                    onChange={(event) => setUsername(event.target.value)}
+                    placeholder="Örn. deniz_42"
+                    autoComplete="username"
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    spellCheck={false}
                   />
                 </label>
               )}

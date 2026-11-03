@@ -10,8 +10,8 @@ const directConversation: ConversationSummary = {
   created_at: '2026-01-01T10:00:00.000Z',
   updated_at: '2026-01-01T10:00:00.000Z',
   participants: [
-    { id: 'user-1', display_name: 'Deniz Yılmaz', avatar_url: null, created_at: '2026-01-01T10:00:00.000Z' },
-    { id: 'user-2', display_name: 'Ada Demir', avatar_url: null, created_at: '2026-01-01T10:00:00.000Z' },
+    { id: 'user-1', display_name: 'Deniz Yılmaz', username: 'deniz', avatar_url: null, created_at: '2026-01-01T10:00:00.000Z' },
+    { id: 'user-2', display_name: 'Ada Demir', username: 'ada', avatar_url: null, created_at: '2026-01-01T10:00:00.000Z' },
   ],
   last_message: null,
 }
