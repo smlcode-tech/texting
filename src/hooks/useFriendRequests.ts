@@ -5,6 +5,7 @@
 // yalnızca bekleyen isteklerin karşı tarafı görünür.
 import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
+import { subscribeLive, type LiveStatus } from '../lib/realtime'
 import { normalizeUsername } from '../lib/username'
 import type { FriendRequest, SendFriendRequestResult } from '../types/chat'
 
@@ -20,6 +21,7 @@ export function useFriendRequests() {
   const [requests, setRequests] = useState<FriendRequest[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
+  const [live, setLive] = useState<LiveStatus>({ connected: false, error: '' })
 
   const reload = useCallback(async () => {
     const { data, error: rpcError } = await supabase.rpc('get_friend_requests')
@@ -39,20 +41,21 @@ export function useFriendRequests() {
     void reload()
   }, [reload])
 
-  useEffect(() => {
-    // Filtre yok: Realtime RLS'e uyduğu için yalnızca gönderen ve alıcı olay alır.
-    // UPDATE de dinlenir; karşı taraf kabul/ret edince giden istek listeden düşmeli.
-    const channel = supabase
-      .channel('friend-requests')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'friend_requests' }, () => {
-        void reload()
-      })
-      .subscribe()
-
-    return () => {
-      void supabase.removeChannel(channel)
-    }
-  }, [reload])
+  useEffect(
+    () =>
+      subscribeLive(
+        // Filtre yok: Realtime RLS'e uyduğu için yalnızca gönderen ve alıcı olay alır.
+        // UPDATE de dinlenir; karşı taraf kabul/ret edince giden istek listeden düşmeli.
+        () =>
+          supabase
+            .channel('friend-requests')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'friend_requests' }, () => {
+              void reload()
+            }),
+        { onSubscribed: () => void reload(), onStatus: setLive },
+      ),
+    [reload],
+  )
 
   const send = useCallback(
     async (username: string): Promise<ActionResult> => {
@@ -83,5 +86,5 @@ export function useFriendRequests() {
     [reload],
   )
 
-  return { requests, isLoading, error, reload, send, respond }
+  return { requests, isLoading, error, live, reload, send, respond }
 }

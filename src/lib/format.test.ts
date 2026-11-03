@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatDayLabel, formatMessageTime, initialsFor, mergeMessage, messagePreview } from './format'
+import { formatDayLabel, formatMessageTime, initialsFor, mergeMessage, mergeMessages, messagePreview } from './format'
 import type { Message } from '../types/chat'
 
 function makeMessage(overrides: Partial<Message> & { id: string; created_at: string }): Message {
@@ -24,6 +24,31 @@ describe('mergeMessage', () => {
     const message = makeMessage({ id: 'a', created_at: '2026-01-01T10:00:00.000Z' })
 
     expect(mergeMessage([message], message)).toHaveLength(1)
+  })
+
+  it('Realtime ve REST tarih biçimleri karışınca da zamana göre sıralar', () => {
+    // REST biçimi: 'T' ayraçlı. Realtime biçimi: boşluk ayraçlı ve '+00' ekli.
+    const later = makeMessage({ id: 'rest', created_at: '2026-11-03T10:41:30.000000+00:00' })
+    const earlier = makeMessage({ id: 'realtime', created_at: '2026-11-03 10:41:26.973418+00' })
+
+    expect(mergeMessage([later], earlier).map((message) => message.id)).toEqual(['realtime', 'rest'])
+  })
+})
+
+describe('mergeMessages', () => {
+  it('yeniden yüklemede mevcut mesajları korur ve yenileri sıralı ekler', () => {
+    const a = makeMessage({ id: 'a', created_at: '2026-01-01T10:00:00.000Z' })
+    const b = makeMessage({ id: 'b', created_at: '2026-01-01T10:05:00.000Z' })
+    const c = makeMessage({ id: 'c', created_at: '2026-01-01T10:10:00.000Z' })
+
+    expect(mergeMessages([c], [a, b, c]).map((message) => message.id)).toEqual(['a', 'b', 'c'])
+  })
+
+  it('yeni mesaj yoksa aynı listeyi döndürür (gereksiz render olmasın)', () => {
+    const a = makeMessage({ id: 'a', created_at: '2026-01-01T10:00:00.000Z' })
+    const list = [a]
+
+    expect(mergeMessages(list, [a])).toBe(list)
   })
 })
 

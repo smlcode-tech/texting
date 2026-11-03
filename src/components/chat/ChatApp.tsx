@@ -8,6 +8,7 @@ import { useFriendRequests } from '../../hooks/useFriendRequests'
 import { useMessages } from '../../hooks/useMessages'
 import { useOwnProfile } from '../../hooks/useOwnProfile'
 import { partitionRequests } from '../../lib/friendRequests'
+import type { LiveStatus } from '../../lib/realtime'
 import { AddFriendDialog } from './AddFriendDialog'
 import { ConversationList } from './ConversationList'
 import { FriendRequestsPanel } from './FriendRequestsPanel'
@@ -24,9 +25,10 @@ export function ChatApp({ session, onSignOut }: Props) {
     conversations,
     isLoading: isLoadingConversations,
     error: conversationsError,
+    live: conversationsLive,
     reload,
   } = useConversations()
-  const { requests, send, respond } = useFriendRequests()
+  const { requests, live: requestsLive, send, respond } = useFriendRequests()
   const ownProfile = useOwnProfile(currentUserId)
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -34,8 +36,14 @@ export function ChatApp({ session, onSignOut }: Props) {
     messages,
     isLoading: isLoadingMessages,
     error: messagesError,
+    live: messagesLive,
     sendMessage,
   } = useMessages(activeConversationId)
+
+  // Telefonda konsol olmadığı için Realtime join hatası ekranda gösterilir; ilk hata yeterli.
+  const liveError = [conversationsLive, requestsLive, messagesLive]
+    .map((status: LiveStatus) => status.error)
+    .find(Boolean)
 
   const { incoming, outgoing } = partitionRequests(requests)
 
@@ -53,6 +61,11 @@ export function ChatApp({ session, onSignOut }: Props) {
 
   return (
     <main className="chat-shell">
+      {liveError && (
+        <p className="live-banner" role="alert">
+          Canlı bağlantı kurulamadı, yeni mesajlar için sayfayı yenilemen gerekebilir. Sebep: {liveError}
+        </p>
+      )}
       <ConversationList
         conversations={conversations}
         activeConversationId={activeConversationId}

@@ -48,7 +48,33 @@ export function initialsFor(name: string): string {
   return `${parts[0][0]}${parts[parts.length - 1][0]}`.toLocaleUpperCase('tr-TR')
 }
 
+// Realtime `2026-11-03 10:41:26.97+00`, REST ise `2026-11-03T10:41:26.97+00:00`
+// biçiminde tarih gönderiyor; metin olarak karşılaştırmak iki kaynağı karıştırınca
+// sırayı bozuyordu (boşluk 'T'den önce sıralanır). Bu yüzden zamana çevrilip kıyaslanır.
+function timestampOf(iso: string): number {
+  // '+00' gibi dakikasız ofsetleri Date.parse tanımıyor; '+00:00' biçimine tamamlanır.
+  const normalized = iso.replace(' ', 'T').replace(/([+-]\d{2})$/, '$1:00')
+  const time = Date.parse(normalized)
+  return Number.isNaN(time) ? 0 : time
+}
+
+function byCreatedAt(a: Message, b: Message): number {
+  return timestampOf(a.created_at) - timestampOf(b.created_at)
+}
+
+/** Tek mesajı ekler; aynı id zaten varsa (ör. hem insert dönüşü hem Realtime) listeyi değiştirmez. */
 export function mergeMessage(list: Message[], incoming: Message): Message[] {
   if (list.some((message) => message.id === incoming.id)) return list
-  return [...list, incoming].sort((a, b) => a.created_at.localeCompare(b.created_at))
+  return [...list, incoming].sort(byCreatedAt)
+}
+
+/**
+ * Yeniden yüklenen mesaj listesini mevcut listeyle birleştirir.
+ * Neden replace değil: yükleme sürerken Realtime veya gönderme ile gelen mesaj kaybolmasın.
+ */
+export function mergeMessages(list: Message[], incoming: Message[]): Message[] {
+  const known = new Set(list.map((message) => message.id))
+  const additions = incoming.filter((message) => !known.has(message.id))
+  if (additions.length === 0) return list
+  return [...list, ...additions].sort(byCreatedAt)
 }
