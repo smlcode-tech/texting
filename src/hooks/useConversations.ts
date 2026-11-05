@@ -24,6 +24,11 @@ export function useConversations() {
     setError('')
     setConversations(((data ?? []) as ConversationSummary[]))
     setIsLoading(false)
+
+    // Liste her yenilendiğinde (açılış, yeniden bağlanma, yeni mesaj olayı) bu
+    // cihaza ulaşan mesajlar "iletildi" işaretlenir. RPC yalnızca gerçekten yeni
+    // mesaj alınmış sohbetlere yazar; hata kullanıcıyı engellemediği için yutulur.
+    void supabase.rpc('mark_messages_delivered')
   }, [])
 
   useEffect(() => {
