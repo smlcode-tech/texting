@@ -1,13 +1,15 @@
 import { useEffect, useRef } from 'react'
 import { conversationDisplayName, otherParticipant } from '../../lib/conversations'
 import { formatDayLabel, formatMessageTime } from '../../lib/format'
-import type { ConversationSummary, Message } from '../../types/chat'
+import { messageStatus } from '../../lib/receipts'
+import type { ConversationSummary, Message, MessageStatus, ParticipantReceipt } from '../../types/chat'
 import { MessageComposer } from './MessageComposer'
 import { UserAvatar } from './UserAvatar'
 
 type Props = {
   conversation: ConversationSummary | null
   messages: Message[]
+  receipts: ParticipantReceipt[]
   currentUserId: string
   isLoading: boolean
   error: string
@@ -17,6 +19,7 @@ type Props = {
 export function MessageThread({
   conversation,
   messages,
+  receipts,
   currentUserId,
   isLoading,
   error,
@@ -76,7 +79,10 @@ export function MessageThread({
               <div className={`message-row${isOwn ? ' own' : ''}`}>
                 <div className="message-bubble">
                   <p className="message-body">{message.body}</p>
-                  <span className="message-time">{formatMessageTime(message.created_at)}</span>
+                  <span className="message-meta">
+                    <span className="message-time">{formatMessageTime(message.created_at)}</span>
+                    {isOwn && <StatusTicks status={messageStatus(message, receipts)} />}
+                  </span>
                 </div>
               </div>
             </div>
@@ -87,5 +93,24 @@ export function MessageThread({
 
       <MessageComposer onSend={onSend} />
     </section>
+  )
+}
+
+const STATUS_LABELS: Record<MessageStatus, string> = {
+  sent: 'Gönderildi',
+  delivered: 'İletildi',
+  read: 'Okundu',
+}
+
+// Tek tik: gönderildi, gri çift tik: iletildi, renkli çift tik: okundu.
+function StatusTicks({ status }: { status: MessageStatus }) {
+  const label = STATUS_LABELS[status]
+  return (
+    <span className={`message-status ${status}`} role="img" aria-label={label} title={label}>
+      <svg viewBox="0 0 18 11" width="16" height="10" aria-hidden="true">
+        <path d="M1 6l3.5 3.5L11 2" />
+        {status !== 'sent' && <path d="M7.5 9.5L16 2" />}
+      </svg>
+    </span>
   )
 }

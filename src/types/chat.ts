@@ -44,6 +44,19 @@ export type Message = {
   edited_at: string | null
 }
 
+/**
+ * Bir katılımcının sohbetteki iletildi/okundu damgaları (conversation_participants).
+ * Mesaj, damga created_at'e ulaştığında o katılımcıya iletilmiş/okunmuş sayılır.
+ */
+export type ParticipantReceipt = {
+  user_id: string
+  last_delivered_at: string | null
+  last_read_at: string | null
+}
+
+/** Kendi mesajlarımızın durumu: tek tik, çift tik, mavi çift tik. */
+export type MessageStatus = 'sent' | 'delivered' | 'read'
+
 export type ConversationSummary = Conversation & {
   participants: Profile[]
   last_message: Message | null

@@ -24,6 +24,7 @@ VITE_SUPABASE_ANON_KEY=your-publishable-or-anon-key
    - `0005_realtime.sql`
    - `0006_revoke_function_grants.sql`
    - `0007_friend_requests.sql`
+   - `0008_message_receipts.sql`
 
 ### Seçenek B — Supabase CLI
 
@@ -41,3 +42,4 @@ supabase db push
 - `profiles` tablosu MVP gereği tüm oturumlu kullanıcılara okunabilir; üretimde kısıtlanması önerilir.
 - `0007_friend_requests.sql` kullanıcı izolasyonunu getirir: `profiles` artık herkese açık değildir; kullanıcı yalnızca kendisini, arkadaşlarını, bekleyen isteklerinin karşı tarafını ve sohbet arkadaşlarını görür. Her profile benzersiz bir `username` eklenir (mevcut kullanıcılar e-posta önekinden doldurulur). Sohbetler yalnızca arkadaşlık isteği kabul edildiğinde `send_friend_request` / `respond_friend_request` RPC'leri içinden oluşur; eski `create_direct_conversation` kaldırılır. Reddedilen taraf aynı kişiye 7 gün sonra tekrar istek gönderebilir.
 - `0007` uygulandığı anda eski frontend'in "Yeni sohbet" akışı çalışmaz (`create_direct_conversation` silinir); migration'ı yeni frontend dağıtımıyla birlikte uygulayın.
+- `0008_message_receipts.sql` iletildi/okundu bilgisini ekler: `conversation_participants` tablosuna `last_delivered_at` ve `last_read_at` damgaları gelir. Damgalar yalnızca `mark_messages_delivered` ve `mark_conversation_read` RPC'leriyle ileri alınır (doğrudan UPDATE politikası yoktur). Mevcut mesajlar okunmuş kabul edilir. Migration'ı yeni frontend'den önce uygulayın; eski frontend bu kolonları kullanmadığı için etkilenmez.

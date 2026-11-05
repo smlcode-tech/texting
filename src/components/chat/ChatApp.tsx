@@ -34,11 +34,12 @@ export function ChatApp({ session, onSignOut }: Props) {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const {
     messages,
+    receipts,
     isLoading: isLoadingMessages,
     error: messagesError,
     live: messagesLive,
     sendMessage,
-  } = useMessages(activeConversationId)
+  } = useMessages(activeConversationId, currentUserId)
 
   // Telefonda konsol olmadığı için Realtime join hatası ekranda gösterilir; ilk hata yeterli.
   const liveError = [conversationsLive, requestsLive, messagesLive]
@@ -84,6 +85,7 @@ export function ChatApp({ session, onSignOut }: Props) {
       <MessageThread
         conversation={activeConversation}
         messages={messages}
+        receipts={receipts}
         currentUserId={currentUserId}
         isLoading={isLoadingMessages}
         error={messagesError}

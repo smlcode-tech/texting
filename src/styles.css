@@ -90,8 +90,13 @@ input:focus { border-color: #69998a; box-shadow: 0 0 0 3px rgba(105,153,138,.14)
 .message-bubble { max-width: min(70%, 520px); background: #fbfaf6; border: 1px solid #e2ddd2; border-radius: 12px 12px 12px 3px; padding: 10px 13px; display: grid; gap: 4px; }
 .message-row.own .message-bubble { background: #d17f43; border-color: #d17f43; color: #fffaf2; border-radius: 12px 12px 3px 12px; }
 .message-body { font-size: 14px; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
-.message-time { font-size: 10px; color: #9aa7a2; justify-self: end; }
+.message-meta { display: inline-flex; align-items: center; gap: 4px; justify-self: end; }
+.message-time { font-size: 10px; color: #9aa7a2; }
 .message-row.own .message-time { color: rgba(255,250,242,.75); }
+.message-status { display: inline-flex; line-height: 0; }
+.message-status svg { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.message-status.sent, .message-status.delivered { color: rgba(255,250,242,.75); }
+.message-status.read { color: #183d3a; }
 .composer { display: flex; gap: 10px; align-items: flex-end; padding: 16px 28px 22px; border-top: 1px solid #e2ddd2; background: #fbfaf6; }
 .composer-input { flex: 1; resize: none; min-height: 46px; max-height: 140px; border: 1px solid #d9d8d0; border-radius: 8px; padding: 13px 14px; background: #fff; font-size: 14px; font-family: inherit; outline: none; }
 .composer-input:focus { border-color: #69998a; box-shadow: 0 0 0 3px rgba(105,153,138,.14); }

@@ -51,7 +51,7 @@ export function initialsFor(name: string): string {
 // Realtime `2026-11-03 10:41:26.97+00`, REST ise `2026-11-03T10:41:26.97+00:00`
 // biçiminde tarih gönderiyor; metin olarak karşılaştırmak iki kaynağı karıştırınca
 // sırayı bozuyordu (boşluk 'T'den önce sıralanır). Bu yüzden zamana çevrilip kıyaslanır.
-function timestampOf(iso: string): number {
+export function timestampOf(iso: string): number {
   // '+00' gibi dakikasız ofsetleri Date.parse tanımıyor; '+00:00' biçimine tamamlanır.
   const normalized = iso.replace(' ', 'T').replace(/([+-]\d{2})$/, '$1:00')
   const time = Date.parse(normalized)
