@@ -7,6 +7,9 @@ import { isSupabaseConfigured, supabase } from '../lib/supabase'
 import { normalizeUsername, validateUsername } from '../lib/username'
 import type { AuthStep, Mode } from '../types/auth'
 
+// Supabase panelindeki Auth > Email > "Email OTP Length" ayarıyla aynı olmalı.
+const OTP_LENGTH = 8
+
 export function AuthScreen() {
   const [mode, setMode] = useState<Mode>('login')
   const [step, setStep] = useState<AuthStep>('credentials')
@@ -76,7 +79,7 @@ export function AuthScreen() {
       if (isAlreadyRegistered) {
         switchMode('login')
         setEmail(normalizedEmail)
-        setError('Bu e-posta adresiyle zaten bir hesap var. Lütfen giriş yapın.')
+        setError('Bu e-posta adresiyle zaten bir hesap var. Google ile kaydolduysan “Google ile devam et” butonunu kullan, değilse parolanla giriş yap.')
         return
       }
       if (signUpError) {
@@ -124,8 +127,8 @@ export function AuthScreen() {
     event.preventDefault()
     setError('')
     setNotice('')
-    if (!/^\d{6}$/.test(otp)) {
-      setError('6 haneli doğrulama kodunu girin.')
+    if (!new RegExp(`^\\d{${OTP_LENGTH}}$`).test(otp)) {
+      setError(`${OTP_LENGTH} haneli doğrulama kodunu girin.`)
       return
     }
     setIsBusy(true)
@@ -165,7 +168,7 @@ export function AuthScreen() {
             <div className="auth-heading">
               <span className="eyebrow">E-POSTA ONAYI</span>
               <h2>Kodunu kontrol et.</h2>
-              <p>{email} adresine gönderdiğimiz 6 haneli kodu gir.</p>
+              <p>{email} adresine gönderdiğimiz {OTP_LENGTH} haneli kodu gir.</p>
             </div>
             <form onSubmit={verifyOtp} noValidate>
               <label>
@@ -173,10 +176,9 @@ export function AuthScreen() {
                 <input
                   inputMode="numeric"
                   autoComplete="one-time-code"
-                  maxLength={6}
                   value={otp}
-                  onChange={(event) => setOtp(event.target.value.replace(/\D/g, ''))}
-                  placeholder="123456"
+                  onChange={(event) => setOtp(event.target.value.replace(/\D/g, '').slice(0, OTP_LENGTH))}
+                  placeholder={'12345678'.slice(0, OTP_LENGTH)}
                 />
               </label>
               {error && <p className="form-message error" role="alert">{error}</p>}
